@@ -40,22 +40,27 @@ fn prefix_addition(fp: ReadDir) -> anyhow::Result<()> {
 
 fn prefix_removal(fp: ReadDir) -> anyhow::Result<()> {
     println!("========= PREFIX REMOVAL =========");
+    let mut is_removed: bool = false;
     for file in fp {
         let mut file_path = file?.path();
         let old_file_path = file_path.clone();
-        let file_name = file_path
+        let does_prefix_exist = file_path
             .file_name()
             .ok_or_else(|| format_err!("failed to get file name"))?
             .to_str()
             .ok_or_else(|| format_err!("failed to convert to str"))?
-            .strip_prefix(PREFIX)
-            .ok_or_else(|| format_err!("failed to find the prefix"))?
-            .to_string();
+            .strip_prefix(PREFIX);
 
-        file_path.set_file_name(file_name);
-        rename(old_file_path, file_path)?;
+        if !does_prefix_exist.is_none() {
+            let file_name = does_prefix_exist.unwrap().to_string();
+            file_path.set_file_name(file_name);
+            rename(old_file_path, file_path)?;
+            is_removed = true;
+        }
     }
-    println!("Successfully removed prefixes!\n");
+    if is_removed {
+        println!("Successfully removed prefixes!\n");
+    }
 
     Ok(())
 }
