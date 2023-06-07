@@ -1,4 +1,5 @@
 use anyhow::format_err;
+use clap::Parser;
 use std::fs::read_dir;
 use std::fs::rename;
 use std::fs::ReadDir;
@@ -59,14 +60,25 @@ fn prefix_removal(fp: ReadDir) -> anyhow::Result<()> {
     Ok(())
 }
 
+#[derive(Parser, Debug)]
+struct Cli {
+    #[arg(short, long)]
+    add: bool,
+}
+
 fn main() -> anyhow::Result<()> {
     let files = read_dir("./")?;
 
-    //// implement prefix addition
-    prefix_addition(files)?;
+    //// implement CLI
+    let args = Cli::parse();
 
-    //// implement prefix removal
-    // prefix_removal(files)?;
+    if args.add {
+        //// implement prefix addition
+        prefix_addition(files)?;
+    } else {
+        //// implement prefix removal
+        prefix_removal(files)?;
+    }
 
     Ok(())
 }
