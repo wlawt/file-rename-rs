@@ -4,13 +4,13 @@ use std::fs::read_dir;
 use std::fs::rename;
 use std::fs::ReadDir;
 
-const PREFIX: &str = "b-";
+// const PREFIX: &str = "b-";
 
 // 1. implement prefix removal
 // 2. make the prefix a command line argument
 // 3. make the renaming recursive (for nested file)
 
-fn prefix_addition(fp: ReadDir) -> anyhow::Result<()> {
+fn prefix_addition(fp: ReadDir, prefix: &String) -> anyhow::Result<()> {
     println!("========= PREFIX ADDITION =========");
     for file in fp {
         let mut file_path = file?.path();
@@ -22,7 +22,7 @@ fn prefix_addition(fp: ReadDir) -> anyhow::Result<()> {
             .ok_or_else(|| format_err!("failed to convert to str"))?;
         println!("Before file name: {}", file_name);
 
-        file_path.set_file_name(PREFIX.to_owned() + file_name);
+        file_path.set_file_name(prefix.to_owned() + file_name);
         println!(
             "After file name: {}",
             file_path
@@ -38,7 +38,7 @@ fn prefix_addition(fp: ReadDir) -> anyhow::Result<()> {
     Ok(())
 }
 
-fn prefix_removal(fp: ReadDir) -> anyhow::Result<()> {
+fn prefix_removal(fp: ReadDir, prefix: &String) -> anyhow::Result<()> {
     println!("========= PREFIX REMOVAL =========");
     let mut is_removed: bool = false;
     for file in fp {
@@ -49,7 +49,7 @@ fn prefix_removal(fp: ReadDir) -> anyhow::Result<()> {
             .ok_or_else(|| format_err!("failed to get file name"))?
             .to_str()
             .ok_or_else(|| format_err!("failed to convert to str"))?
-            .strip_prefix(PREFIX);
+            .strip_prefix(prefix);
 
         if !does_prefix_exist.is_none() {
             let file_name = does_prefix_exist.unwrap().to_string();
@@ -69,6 +69,9 @@ fn prefix_removal(fp: ReadDir) -> anyhow::Result<()> {
 struct Cli {
     #[arg(short, long)]
     add: bool,
+
+    #[arg(short, long)]
+    prefix: String,
 }
 
 fn main() -> anyhow::Result<()> {
@@ -79,10 +82,10 @@ fn main() -> anyhow::Result<()> {
 
     if args.add {
         //// implement prefix addition
-        prefix_addition(files)?;
+        prefix_addition(files, &args.prefix)?;
     } else {
         //// implement prefix removal
-        prefix_removal(files)?;
+        prefix_removal(files, &args.prefix)?;
     }
 
     Ok(())
