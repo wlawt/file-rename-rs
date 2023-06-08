@@ -10,7 +10,7 @@ use std::fs::ReadDir;
 // 2. make the prefix a command line argument
 // 3. make the renaming recursive (for nested file)
 
-fn prefix_addition(fp: ReadDir, prefix: &String) -> anyhow::Result<()> {
+fn prefix_addition(fp: ReadDir, prefix: &str) -> anyhow::Result<()> {
     println!("========= PREFIX ADDITION =========");
     for file in fp {
         let mut file_path = file?.path();
@@ -38,7 +38,7 @@ fn prefix_addition(fp: ReadDir, prefix: &String) -> anyhow::Result<()> {
     Ok(())
 }
 
-fn prefix_removal(fp: ReadDir, prefix: &String) -> anyhow::Result<()> {
+fn prefix_removal(fp: ReadDir, prefix: &str) -> anyhow::Result<()> {
     println!("========= PREFIX REMOVAL =========");
     let mut is_removed: bool = false;
     for file in fp {
@@ -52,6 +52,7 @@ fn prefix_removal(fp: ReadDir, prefix: &String) -> anyhow::Result<()> {
             .strip_prefix(prefix);
 
         if !does_prefix_exist.is_none() {
+            //// TODO: refactor .unwrap
             let file_name = does_prefix_exist.unwrap().to_string();
             file_path.set_file_name(file_name);
             rename(old_file_path, file_path)?;
