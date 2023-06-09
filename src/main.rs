@@ -1,5 +1,6 @@
 use anyhow::format_err;
 use clap::Parser;
+use std::fs::metadata;
 use std::fs::read_dir;
 use std::fs::rename;
 use std::fs::ReadDir;
@@ -13,7 +14,13 @@ use std::fs::ReadDir;
 fn prefix_addition(fp: ReadDir, prefix: &str) -> anyhow::Result<()> {
     println!("========= PREFIX ADDITION =========");
     for file in fp {
-        let mut file_path = file?.path();
+        // validate file
+        let entry = file?;
+        if !entry.path().as_path().exists() {
+            continue;
+        }
+
+        let mut file_path = entry.path();
         let old_file_path = file_path.clone();
         let file_name = file_path
             .file_name()
