@@ -1,6 +1,5 @@
 use anyhow::format_err;
 use clap::Parser;
-use std::fs::metadata;
 use std::fs::read_dir;
 use std::fs::rename;
 use std::fs::ReadDir;
