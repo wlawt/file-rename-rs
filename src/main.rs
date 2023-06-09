@@ -15,7 +15,7 @@ fn prefix_addition(fp: ReadDir, prefix: &str) -> anyhow::Result<()> {
     for file in fp {
         // validate file
         let entry = file?;
-        if !entry.path().as_path().exists() {
+        if !entry.path().as_path().is_file() {
             continue;
         }
 
